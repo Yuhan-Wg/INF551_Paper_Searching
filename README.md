@@ -46,3 +46,22 @@ We divide our project into 4 Steps, which can be thought as milestones:
 ⇨ A simple app with basic functions, which can work properly(Before Oct 14)
 ⇨ Midterm, an advanced app with more complicated functions(Before Oct 28)
 ⇨ Final, a finished app with beautiful interface(Before Nov 18)
+
+## JSON Data Structure
+{"maximumIndex":metadata, "data":{content}}
+
+content(dictionary, keys are shown below):
+
+{'type',
+'title',
+'author',
+'authorInstitution',
+'publisher',
+'date',
+'doi',
+'pdfLink',
+'textLink',
+'text',
+'abstract',
+'discussion'}
+
