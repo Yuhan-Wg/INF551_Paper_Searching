@@ -80,17 +80,17 @@ class spiderAA:
                 except:
                     continue
 
-                try:
-                    pdf_content = urlopen(pdf_url, timeout=30)
-                    time.sleep(self.sleep_time * (1+random.random()) )
-                except:
-                    print('Time out!')
-                    continue
+                #try:
+                #    pdf_content = urlopen(pdf_url, timeout=30)
+                #    time.sleep(self.sleep_time * (1+random.random()) )
+                #except:
+                #    print('Time out!')
+                #    continue
 
-                if '.full.pdf' not in pdf_content.geturl():
-                    ## if true, means url is redirected
-                    ## Restricted access
-                    continue
+                #if '.full.pdf' not in pdf_content.geturl():
+                #    ## if true, means url is redirected
+                #    ## Restricted access
+                #    continue
                 ### check end ###
 
                 ### text url is helpful for us to get more metadata from
