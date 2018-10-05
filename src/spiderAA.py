@@ -16,7 +16,7 @@ class spiderAA:
         self.year_end = year_end
         self.url_count = 0
         self.metadata_count = 0
-        self.sleep_time = 10
+        self.sleep_time = 20
 
     def autoScraping(self, name = "metadata.json"):
         for year in range(self.year_start, self.year_end+1):
@@ -95,8 +95,11 @@ class spiderAA:
 
                 ### text url is helpful for us to get more metadata from
                 ### webpage that can't be read from pdf documents
-                text_url = self.basic_url + \
-                div.find('a',{'title':'Full Text'}).get('href')
+                try:
+                	text_url = self.basic_url + \
+                	div.find('a',{'title':'Full Text'}).get('href')
+                except:
+                	continue
 
                 self.url_list[year][week].append((text_url, pdf_url))
                 self.url_count += 1
@@ -237,9 +240,13 @@ class spiderAA:
 
         return textDict
 
-    def saveasJSON(self, name):
+    def saveasJSON(self, name, data):
         with open("../data/json/"+ name,'w',encoding='utf-8') as json_file:
-            json.dump(self.text_list, json_file, ensure_ascii=False)
+            json.dump(data, json_file, ensure_ascii=False)
 
-        with open("../data/json/urlList.json",'w',encoding='utf-8') as json_file:
-            json.dump(self.url_list, json_file, ensure_ascii=False)
+    def readJSON(self, name):
+        with open("../data/json/"+name,'r',encoding='utf-8') as json_file:
+            data = json.load(json_file)
+        return data
+
+    
