@@ -48,11 +48,12 @@ We divide our project into 4 Steps, which can be thought as milestones:
 ⇨ Final, a finished app with beautiful interface(Before Nov 18)
 
 ## JSON Data Structure
-{"maximumIndex":metadata, "data":{content}}
+{year:{week:[content,]}}
 
-content(dictionary, keys are shown below):
+content is dictionary, keys are shown below:
 
-{'type',
+content
+{'category',
 'title',
 'author',
 'authorInstitution',
@@ -61,7 +62,5 @@ content(dictionary, keys are shown below):
 'doi',
 'pdfLink',
 'textLink',
-'text',
-'abstract',
-'discussion'}
+'text'}
 
