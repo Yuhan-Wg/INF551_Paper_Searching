@@ -3,11 +3,6 @@
 
 ## Project Timeline
  
-### Week 4(by Sep 16)
-
-Prepare Data: Scrape pdf documents from websites
-
-
 ### Week 5-6(by Sep 30)
 
 Build Database: Extract the metadata from pdf documents, convert to JSON and upload to Firebase real-time database.
