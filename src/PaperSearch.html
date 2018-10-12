@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查找文献</title>
+    <style>
+        tr{height: 40px}
+        .tips{display: inline}
+        .board{width: 400px;height: 300px;
+        background-color: ghostwhite;
+        border-top:1px solid black;border-bottom:1px solid black;
+            border-right:1px solid black;border-left: 1px solid black;
+        margin-top: 300px;margin-left: 600px}
+        table{padding-left: 40px;padding-top: 40px}
+        .button{margin-left: 100px;position: absolute;margin-top:-20px;}
+        .buttonback{margin-left: 100px;margin-top:-30px;position: absolute}
+
+    </style>
+</head>
+<body background="../static/img/background.png">
+<div class="board">
+
+    <table>
+
+             <tr>
+                <td><div class="tips">Author Name：</div></td>
+                <td><input type="text" id="author"></td>
+            </tr>
+
+
+            <tr>
+                <td ><div class="button"><button style="width: 100px; height: 30px" onclick="search()">search</button> </div></td>
+            </tr>
+         <!-- 返回index界面 -->
+
+
+    </table>
+<div id='text'>
+
+</div>
+
+
+
+
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyCY2-VjMF7IWAqIW2B28Bkqe4CcnvN0wUo",
+        authDomain: "inf551-project-f33cc.firebaseapp.com",
+        databaseURL: "https://inf551-project-f33cc.firebaseio.com",
+        projectId: "inf551-project-f33cc",
+        storageBucket: "inf551-project-f33cc.appspot.com",
+        messagingSenderId: "563076659205"
+    };
+    firebase.initializeApp(config);
+    var database = firebase.database();
+
+
+    function authorSearch(snapshot){
+      var result =  snapshot.val();
+      var idxRef = database.ref('metadata/id/' + result[0])
+      idxRef.on('value', metadataSearch);
+    }
+
+    function metadataSearch(snapshot){
+        var result = snapshot.val();
+        document.getElementById("text").innerHTML = JSON.stringify(result);
+    }
+    var idx;
+    function search(){
+        //var year = document.getElementById("year").innerHTML
+        var author = document.getElementById("author").value
+        //var category = document.getElementById("author").innerHTML
+        var Ref = database.ref('metadata/author/' + author);
+        Ref.on('value', authorSearch);
+        //document.getElementById("text").innerHTML = JSON.stringify(idx)
+    }
+
+</script>
+
+</body>
+</html>

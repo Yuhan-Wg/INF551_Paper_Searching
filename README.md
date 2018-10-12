@@ -3,11 +3,6 @@
 
 ## Project Timeline
  
-### Week 4(by Sep 16)
-
-Prepare Data: Scrape pdf documents from websites
-
-
 ### Week 5-6(by Sep 30)
 
 Build Database: Extract the metadata from pdf documents, convert to JSON and upload to Firebase real-time database.
@@ -48,11 +43,12 @@ We divide our project into 4 Steps, which can be thought as milestones:
 ⇨ Final, a finished app with beautiful interface(Before Nov 18)
 
 ## JSON Data Structure
-{"maximumIndex":metadata, "data":{content}}
+{year:{week:[content,]}}
 
-content(dictionary, keys are shown below):
+content is dictionary, keys are shown below:
 
-{'type',
+content
+{'category',
 'title',
 'author',
 'authorInstitution',
@@ -61,7 +57,5 @@ content(dictionary, keys are shown below):
 'doi',
 'pdfLink',
 'textLink',
-'text',
-'abstract',
-'discussion'}
+'text'}
 
