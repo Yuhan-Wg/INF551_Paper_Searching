@@ -59,14 +59,10 @@
     firebase.initializeApp(config);
     var database = firebase.database();
 
-    function authorWordSearch(snapshot) {
+
+    function authorSearch(snapshot){
       var result =  snapshot.val();
-      var authorRef = database.ref('author/' + result[0]);
-      authorRef.on('value', authorsearch);
-    }
-    function authorsearch(snapshot){
-      var result =  snapshot.val();
-      var idxRef = database.ref('id/' + result[0])
+      var idxRef = database.ref('metadata/id/' + result[0])
       idxRef.on('value', metadataSearch);
     }
 
@@ -79,8 +75,8 @@
         //var year = document.getElementById("year").innerHTML
         var author = document.getElementById("author").value
         //var category = document.getElementById("author").innerHTML
-        var Ref = database.ref('authorWords/' + author);
-        Ref.on('value', authorWordSearch);
+        var Ref = database.ref('metadata/author/' + author);
+        Ref.on('value', authorSearch);
         //document.getElementById("text").innerHTML = JSON.stringify(idx)
     }
 
