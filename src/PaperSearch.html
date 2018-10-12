@@ -21,48 +21,66 @@
 <div class="board">
 
     <table>
-        <!-- 传输年份、类型、书刊、标题数据 -->
-        <form action="\paperResult" method="post">
-            <tr>
-                <td><div class="tips">Publication Year：</div></td>
-                <td><input type="text" name="year"></td>
-            </tr>
-
-            <tr>
-                <td><div class="tips">Category：</div></td>
-                <td><input type="text" name="type"></td>
-            </tr>
 
              <tr>
-                <td><div class="tips">Journal Name：</div></td>
-                <td><input type="text" name="journal"></td>
+                <td><div class="tips">Author Name：</div></td>
+                <td><input type="text" id="author"></td>
             </tr>
 
 
             <tr>
-                <td><div class="tips">Title：</div></td>
-                <td><input type="text" name="title"></td>
+                <td ><div class="button"><button style="width: 100px; height: 30px" onclick="search()">search</button> </div></td>
             </tr>
-
-
-            <tr>
-                <td ><div class="button"><input style="width: 100px" type="submit" value="Find"></div></td>
-            </tr>
-        </form>
          <!-- 返回index界面 -->
-       <form action="\index">
-            <tr>
-                <td ><div class="buttonback"><input style="width: 100px" type="submit" value="Return"></div></td>
-            </tr>
-        </form>
+
 
     </table>
+<div id='text'>
 
+</div>
 
 
 
 
 </div>
+
+
+<script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyCY2-VjMF7IWAqIW2B28Bkqe4CcnvN0wUo",
+        authDomain: "inf551-project-f33cc.firebaseapp.com",
+        databaseURL: "https://inf551-project-f33cc.firebaseio.com",
+        projectId: "inf551-project-f33cc",
+        storageBucket: "inf551-project-f33cc.appspot.com",
+        messagingSenderId: "563076659205"
+    };
+    firebase.initializeApp(config);
+    var database = firebase.database();
+
+
+    function authorSearch(snapshot){
+      var result =  snapshot.val();
+      var idxRef = database.ref('metadata/id/' + result[0])
+      idxRef.on('value', metadataSearch);
+    }
+
+    function metadataSearch(snapshot){
+        var result = snapshot.val();
+        document.getElementById("text").innerHTML = JSON.stringify(result);
+    }
+    var idx;
+    function search(){
+        //var year = document.getElementById("year").innerHTML
+        var author = document.getElementById("author").value
+        //var category = document.getElementById("author").innerHTML
+        var Ref = database.ref('metadata/author/' + author);
+        Ref.on('value', authorSearch);
+        //document.getElementById("text").innerHTML = JSON.stringify(idx)
+    }
+
+</script>
 
 </body>
 </html>
