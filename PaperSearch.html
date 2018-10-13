@@ -58,28 +58,60 @@
     };
     firebase.initializeApp(config);
     var database = firebase.database();
+    var idx = [];
 
 
-    function authorSearch(snapshot){
+    function Search(snapshot){
       var result =  snapshot.val();
-      var idxRef = database.ref('metadata/id/' + result[0])
-      idxRef.on('value', metadataSearch);
+      idx = idx.concat(result);
+    }
+
+    function metadata(snapshot){
+        //idx = JSON.stringify(result)
+        //var result =  snapshot.val();
+        //idx = idx.concat(result);
+        idx = unique(idx);
+        for (var i=0;i<idx.length;i++){
+            var ref = database.ref('metadata/id/' + idx[i]);
+            ref.on('value', metadataSearch);
+        }
     }
 
     function metadataSearch(snapshot){
+        //idx = JSON.stringify(result)
         var result = snapshot.val();
-        document.getElementById("text").innerHTML = JSON.stringify(result);
-    }
-    var idx;
-    function search(){
-        //var year = document.getElementById("year").innerHTML
-        var author = document.getElementById("author").value
-        //var category = document.getElementById("author").innerHTML
-        var Ref = database.ref('metadata/author/' + author);
-        Ref.on('value', authorSearch);
-        //document.getElementById("text").innerHTML = JSON.stringify(idx)
+         document.getElementById("text").innerHTML += result['title'] + '<br>';
     }
 
+    function search(){
+        //var year = document.getElementById("year").innerHTML
+        var text = document.getElementById("author").value.toLowerCase()
+        var textarray = text.split(/[\s]/);
+        //var category = document.getElementById("author").innerHTML
+        for (var i=0;i<textarray.length;i++){
+            var Refauthor = database.ref('metadata/author/' + textarray[i]);
+            var Refinstitution = database.ref('metadata/institution/' + textarray[i]);
+            var Reftext = database.ref('metadata/textWords/' +textarray[i]);
+            var Reftitle = database.ref('metadata/title/' +textarray[i]);
+            Refauthor.on('value', Search);
+            Refinstitution.on('value', Search);
+            Reftext.on('value', Search);
+            Reftitle.on('value', Search);
+        }
+        Reftitle.on('value', metadata);
+    }
+
+
+    function unique(array) {
+        var res = [];
+        for (var i = 0, len = array.length; i < len; i++) {
+            var current = array[i];
+            if (res.indexOf(current) === -1) {
+                res.push(current)
+            }
+        }
+        return res;
+    }
 </script>
 
 </body>
