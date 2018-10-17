@@ -67,9 +67,6 @@
     }
 
     function metadata(snapshot){
-        //idx = JSON.stringify(result)
-        //var result =  snapshot.val();
-        //idx = idx.concat(result);
         idx = unique(idx);
         for (var i=0;i<idx.length;i++){
             var ref = database.ref('metadata/id/' + idx[i]);
