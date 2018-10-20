@@ -4,17 +4,24 @@
     <meta charset="UTF-8">
     <title>查找文献</title>
     <style>
-        tr{height: 40px}
+        td{height: 40px}
+        .t{height: 220px;width: 900px}
         .tips{display: inline}
-        .board{width: 400px;height: 300px;
+        .board{width: 800px;height: 150px;
         background-color: ghostwhite;
         border-top:1px solid black;border-bottom:1px solid black;
             border-right:1px solid black;border-left: 1px solid black;
-        margin-top: 300px;margin-left: 600px}
+        margin-top: 300px;margin-left: 400px}
         table{padding-left: 40px;padding-top: 40px}
-        .button{margin-left: 100px;position: absolute;margin-top:-20px;}
+        .button{margin-left: 150px;position: absolute;margin-top:-20px}
         .buttonback{margin-left: 100px;margin-top:-30px;position: absolute}
-
+        input{width: 600px}
+        .bar{width:800px;height: auto;border: 1px solid}
+        .title{font-size: 25px}
+        .author{font-size: 15px}
+          .content{font-size: 20px}
+          .download{font-size: 20px}
+          .date{font-size: 15px;}
     </style>
 </head>
 <body background="../static/img/background.png">
@@ -23,20 +30,26 @@
     <table>
 
              <tr>
-                <td><div class="tips">Author Name：</div></td>
-                <td><input type="text" id="author"></td>
+                <td><div class="tips">Search：</div></td>
+                <td><input type="text" id="input"></td>
             </tr>
 
 
             <tr>
-                <td ><div class="button"><button style="width: 100px; height: 30px" onclick="search()">search</button> </div></td>
+                <td ><div class="button"><button style="width: 400px; height: 50px" onclick="search()">search</button> </div></td>
             </tr>
-         <!-- 返回index界面 -->
 
 
     </table>
-<div id='text'>
 
+    <br>
+    <br>
+<div >
+  <tr>
+    <div id='text'>
+
+</div>
+  </tr>
 </div>
 
 
@@ -77,12 +90,35 @@
     function metadataSearch(snapshot){
         //idx = JSON.stringify(result)
         var result = snapshot.val();
-         document.getElementById("text").innerHTML += result['title'] + '<br>';
+        if (result['text'].length > 300){
+        content= result['text'].substring(0,300) + '...';
+        }
+        else{
+          content = result['text'];
+        }
+        if (result['author'].legend==0){
+          author = "Anonymous";
+        }
+        else{
+          author = ""
+          for (var i=0;i<result['author'].length;i++){
+            author += result['author'][i] + ", "
+          }
+          if (author.length > 50){
+          author= author.substring(0,50) + '...';
+          }
+        }
+         document.getElementById("text").innerHTML += '<td class="t"><div class="bar"><div class="title">' +
+         result['title'] +'</div><div class="date"><i>' + result['date'] +
+         '</i></div><div class="author">' + author + '</div><div class="content">'
+         + content + '</div><br<div class="download">'
+         + '<a href="'+result['pdfLink'] + '">Download</a>&nbsp&nbsp<a href="">Learn more</a></div>' + '</div></td><br>';
     }
 
     function search(){
         //var year = document.getElementById("year").innerHTML
-        var text = document.getElementById("author").value.toLowerCase()
+        document.getElementById("text").innerHTML = '';
+        var text = document.getElementById("input").value.toLowerCase()
         var textarray = text.split(/[\s]/);
         //var category = document.getElementById("author").innerHTML
         for (var i=0;i<textarray.length;i++){
