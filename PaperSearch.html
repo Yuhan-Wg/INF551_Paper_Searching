@@ -26,17 +26,18 @@
 </head>
 <body background="../static/img/background.png">
 <div class="board">
+  <div id = 'test'></div>
 
     <table>
 
              <tr>
                 <td><div class="tips">Search：</div></td>
-                <td><input type="text" id="input"></td>
+                <td><input type="text" id="input" value="yarn"></td>
             </tr>
 
 
             <tr>
-                <td ><div class="button"><button style="width: 400px; height: 50px" onclick="search()">search</button> </div></td>
+                <td ><div class="button"><button style="width: 400px; height: 50px" onclick="paperSearch()">search</button> </div></td>
             </tr>
 
 
@@ -71,20 +72,76 @@
     };
     firebase.initializeApp(config);
     var database = firebase.database();
-    var idx = [];
 
 
-    function Search(snapshot){
-      var result =  snapshot.val();
-      idx = idx.concat(result);
+    async function paperSearch(){
+        var index = await indexProducer();
+        //alert(index);
+        var results = await indexToMetadata(index);
+        //alert(results);
+        return results;
+      }
+
+    async function indexProducer(){
+      document.getElementById("text").innerHTML = '';
+      var text = document.getElementById("input").value.toLowerCase()
+      var textarray = text.split(/[\s]/);
+      var idx = [];
+
+      function indexMerge(snapshot){
+        var result =  snapshot.val();
+        if(typeof result == 'null'){
+          return;
+        }
+        idx = idx.concat(result);
+      }
+
+      for (var i=0;i<textarray.length;i++){
+          var Refauthor = database.ref('metadata/author/' + textarray[i]);
+          var Refauthor = await Refauthor.once('value');
+          indexMerge(Refauthor);
+
+          var Refinstitution = database.ref('metadata/institution/' + textarray[i]);
+          var Refinstitution = await Refinstitution.once('value');
+          indexMerge(Refinstitution);
+
+          var Reftitle = database.ref('metadata/title/' +textarray[i]);
+          var Reftitle = await Reftitle.once('value');
+          indexMerge(Reftitle);
+
+          var Reftext = database.ref('metadata/textWords/' +textarray[i]);
+          var Reftext = await Reftext.once('value');
+          indexMerge(Reftext);
+          //await Refauthor.then(indexMerge);
+          //await Refinstitution.once('value').then(indexMerge);
+          //await Reftext.once('value').then(indexMerge);
+          //await Reftitle.once('value').then(indexMerge);
+      }
+
+      idx = unique(idx);
+      return idx;
     }
 
-    function metadata(snapshot){
-        idx = unique(idx);
+    function unique(array) {
+        var res = [];
+        for (var i = 0, len = array.length; i < len; i++) {
+            var current = array[i];
+            if (res.indexOf(current) === -1 && typeof current === "number") {
+                res.push(current)
+            }
+        }
+        return res;
+    }
+
+    async function indexToMetadata(idx){
+        var results = []
         for (var i=0;i<idx.length;i++){
             var ref = database.ref('metadata/id/' + idx[i]);
-            ref.on('value', metadataSearch);
+            ref = await ref.once('value');
+            ref = metadataSearch(ref)
+            results.push(ref);
         }
+        return results
     }
 
     function metadataSearch(snapshot){
@@ -96,7 +153,7 @@
         else{
           content = result['text'];
         }
-        if (result['author'].legend==0){
+        if (! result['author']){
           author = "Anonymous";
         }
         else{
@@ -108,43 +165,16 @@
           author= author.substring(0,50) + '...';
           }
         }
+
          document.getElementById("text").innerHTML += '<td class="t"><div class="bar"><div class="title">' +
          result['title'] +'</div><div class="date"><i>' + result['date'] +
          '</i></div><div class="author">' + author + '</div><div class="content">'
          + content + '</div><br<div class="download">'
          + '<a href="'+result['pdfLink'] + '">Download</a>&nbsp&nbsp<a href="">Learn more</a></div>' + '</div></td><br>';
-    }
-
-    function search(){
-        //var year = document.getElementById("year").innerHTML
-        document.getElementById("text").innerHTML = '';
-        var text = document.getElementById("input").value.toLowerCase()
-        var textarray = text.split(/[\s]/);
-        //var category = document.getElementById("author").innerHTML
-        for (var i=0;i<textarray.length;i++){
-            var Refauthor = database.ref('metadata/author/' + textarray[i]);
-            var Refinstitution = database.ref('metadata/institution/' + textarray[i]);
-            var Reftext = database.ref('metadata/textWords/' +textarray[i]);
-            var Reftitle = database.ref('metadata/title/' +textarray[i]);
-            Refauthor.on('value', Search);
-            Refinstitution.on('value', Search);
-            Reftext.on('value', Search);
-            Reftitle.on('value', Search);
-        }
-        Reftitle.on('value', metadata);
+         return result;
     }
 
 
-    function unique(array) {
-        var res = [];
-        for (var i = 0, len = array.length; i < len; i++) {
-            var current = array[i];
-            if (res.indexOf(current) === -1) {
-                res.push(current)
-            }
-        }
-        return res;
-    }
 </script>
 
 </body>
