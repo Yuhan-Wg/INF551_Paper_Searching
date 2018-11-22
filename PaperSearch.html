@@ -75,14 +75,17 @@
 
 
     async function paperSearch(){
-        var index = await indexProducer();
-        //alert(index);
+        var limit = new Array();
+        limit['year'] = ['2010','2014']
+        var logic1 = 'or'
+        var logic2 = 'or'
+        var index = await indexProducer(limit,logic1, logic2);
         var results = await indexToMetadata(index);
         //alert(results);
         return results;
       }
 
-    async function indexProducer(){
+    async function indexProducer(limit,logic1, logic2){
       document.getElementById("text").innerHTML = '';
       var text = document.getElementById("input").value.toLowerCase()
       var textarray = text.split(/[\s]/);
@@ -91,34 +94,91 @@
       function indexMerge(snapshot){
         var result =  snapshot.val();
         if(typeof result == 'null'){
-          return;
+          return [];
         }
-        idx = idx.concat(result);
+        return result
+      }
+
+      // limitation
+      if( limit !== null){
+        idx_limit = []
+        for (var key in limit){
+          for(var i=0;i<limit[key].length;i++){
+            var RefLimit = database.ref('metadata/' + key + '/' + limit[key][i]);
+            var RefLimit = await RefLimit.once('value');
+            idx_limit_r = indexMerge(RefLimit)
+            if(logic2 == 'and'){
+              idx_limit.push(idx_limit_r)
+            }
+            else if(logic2 == 'or'){
+              idx_limit = idx_limit.concat(idx_limit_r)
+            }
+          }
+        }
+        if(logic2 =='and'){
+          idx_limit[0] = idx_limit[0].filter(v => typeof(v)==='number')
+          idx_limit = idx_limit.reduce(function(a,b){
+            return a.filter(v => b.includes(v))
+          })
+        }
+        else if(logic2 =='or'){
+          idx_limit = unique(idx_limit)
+        }
+        if(text == ''){
+          return idx_limit
+        }
+      }
+      else if(limit === null && text==''){
+        for(var i=0;i<10;i++){
+          idx.push(Math.ceil(Math.random()*3954))
+        }
+        return idx
       }
 
       for (var i=0;i<textarray.length;i++){
+          idx_r = []
           var Refauthor = database.ref('metadata/author/' + textarray[i]);
           var Refauthor = await Refauthor.once('value');
-          indexMerge(Refauthor);
+          idx_r = idx_r.concat(indexMerge(Refauthor));
 
           var Refinstitution = database.ref('metadata/institution/' + textarray[i]);
           var Refinstitution = await Refinstitution.once('value');
-          indexMerge(Refinstitution);
+          idx_r = idx_r.concat(indexMerge(Refinstitution));
 
           var Reftitle = database.ref('metadata/title/' +textarray[i]);
           var Reftitle = await Reftitle.once('value');
-          indexMerge(Reftitle);
+          idx_r = idx_r.concat(indexMerge(Reftitle));
 
           var Reftext = database.ref('metadata/textWords/' +textarray[i]);
           var Reftext = await Reftext.once('value');
-          indexMerge(Reftext);
-          //await Refauthor.then(indexMerge);
-          //await Refinstitution.once('value').then(indexMerge);
-          //await Reftext.once('value').then(indexMerge);
-          //await Reftitle.once('value').then(indexMerge);
+          idx_r = idx_r.concat(indexMerge(Reftext));
+
+          if(logic1 == 'and'){
+            idx.push(idx_r)
+          }
+          else if(logic1 == 'or'){
+            idx = idx.concat(idx_r)
+          }
+      }
+      if(logic1 == 'and'){
+        idx[0] = idx[0].filter(v => typeof(v)==='number')
+        idx = idx.reduce(function(a,b){
+          return a.filter(v => b.includes(v))
+        })
+      }
+      else if(logic1 == 'or'){
+        idx = uniquesort(idx);
       }
 
-      idx = unique(idx);
+
+      //idx = idx.filter(function(v){
+      //  return dx_limit.includes(v)
+      //});
+      //alert(typeof(idx[0]))
+      //alert(typeof(idx_limit[0]))
+      if( limit !== null){
+        idx = idx.filter(v => idx_limit.includes(v))
+      }
       return idx;
     }
 
@@ -131,6 +191,32 @@
             }
         }
         return res;
+    }
+
+    function uniquesort(array) {
+      var arr = [];
+      var res = [];
+      for (var i = 0, len = array.length; i < len; i++) {
+        if(typeof(array[i]) !== 'number'){
+          continue;
+        }
+        else if(arr.hasOwnProperty(array[i])){
+          arr[array[i]] += 1
+        }
+        else{
+          arr[array[i]] = 1
+        }
+      }
+      for(var v in arr){
+        res.push([v, arr[v]])
+      }
+      res = res.sort(function(a,b){
+          return b[1] - a[1]
+      })
+      res = res.map(function(a){
+        return parseInt(a[0])
+      })
+      return res;
     }
 
     async function indexToMetadata(idx){
