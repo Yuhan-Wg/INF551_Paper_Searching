@@ -169,3 +169,27 @@ async function paperSearch(keyword,limit,logic1, logic2){
       }
       return results
   }
+
+function metadataSearch(snapshot){
+    //idx = JSON.stringify(result)
+    var result = snapshot.val();
+    if (result['text'].length > 300){
+    content= result['text'].substring(0,300) + '...';
+    }
+    else{
+      content = result['text'];
+    }
+    if (! result['author']){
+      author = "Anonymous";
+    }
+    else{
+      author = ""
+      for (var i=0;i<result['author'].length;i++){
+        author += result['author'][i] + ", "
+      }
+      if (author.length > 50){
+      author= author.substring(0,50) + '...';
+      }
+    }
+    return result;
+}
