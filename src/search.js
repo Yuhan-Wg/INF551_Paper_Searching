@@ -14,20 +14,21 @@ firebase.initializeApp(config);
 var database = firebase.database();
 
 
-async function paperSearch(keyword,limit,logic1, logic2){
+async function paperSearch(keyword,limit,logic1, logic2, logic3){
   //var limit = new Array();
   //limit['year'] = ['2010','2014']
   //var logic1 = 'or'
   //var logic2 = 'or'
-  var index = await indexProducer(keyword,limit,logic1, logic2);
+  //var logic3 = 'and'
+  var index = await indexProducer(keyword,limit,logic1, logic2, logic3);
   var results = await indexToMetadata(index);
   //alert(results);
   return results;
   }
 
   async function indexProducer(keyword,limit,logic1, logic2){
-    document.getElementById("text").innerHTML = '';
-    var text = document.getElementById("input").value.toLowerCase()
+    //document.getElementById("text").innerHTML = '';
+    var text = keyword.toLowerCase()
     var textarray = text.split(/[\s]/);
     var idx = [];
 
@@ -43,27 +44,46 @@ async function paperSearch(keyword,limit,logic1, logic2){
     if( limit !== null){
       idx_limit = []
       for (var key in limit){
+        idx_limit_c = []
         for(var i=0;i<limit[key].length;i++){
           var RefLimit = database.ref('metadata/' + key + '/' + limit[key][i]);
           var RefLimit = await RefLimit.once('value');
           idx_limit_r = indexMerge(RefLimit)
           if(logic2 == 'and'){
-            idx_limit.push(idx_limit_r)
+            idx_limit_c.push(idx_limit_r)
           }
           else if(logic2 == 'or'){
-            idx_limit = idx_limit.concat(idx_limit_r)
+            idx_limit_c = idx_limit_c.concat(idx_limit_r)
           }
         }
+        if(logic2 == 'and'){
+          idx_limit_c[0] = idx_limit_c[0].filter(v => typeof(v)==='number')
+          idx_limit_c = idx_limit_c.reduce(function(a,b){
+            return a.filter(v => b.includes(v))
+          })
+        }
+        else if(logic2 == 'or'){
+          idx_limit_c = unique(idx_limit_c)
+        }
+
+        if(logic3 == 'and'){
+          idx_limit.push(idx_limit_c)
+        }
+        else if(logic3 == 'or'){
+          idx_limit = idx_limit.concat(idx_limit_c)
+        }
+
       }
-      if(logic2 =='and'){
+      if(logic3 =='and'){
         idx_limit[0] = idx_limit[0].filter(v => typeof(v)==='number')
         idx_limit = idx_limit.reduce(function(a,b){
           return a.filter(v => b.includes(v))
         })
       }
-      else if(logic2 =='or'){
+      else if(logic3 =='or'){
         idx_limit = unique(idx_limit)
       }
+
       if(text == ''){
         return idx_limit
       }
