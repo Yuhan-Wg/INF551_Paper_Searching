@@ -26,8 +26,6 @@ async function paperSearch(keyword,limit,logic1, logic2, logic3){
   return results;
   }
 
-<<<<<<< HEAD
-
   async function indexProducer(keyword, limit,logic1, logic2, logic3){
       var text = keyword.toLowerCase()
       var textarray = text.split(/[\s]/);
@@ -35,21 +33,11 @@ async function paperSearch(keyword,limit,logic1, logic2, logic3){
 
       function indexMerge(snapshot){
         var result =  snapshot.val();
-=======
-  async function indexProducer(keyword,limit,logic1, logic2, logic3){
-    //document.getElementById("text").innerHTML = '';
-    var text = keyword.toLowerCase()
-    var textarray = text.split(/[\s]/);
-    var idx = [];
-
-    function indexMerge(snapshot){
-      var result =  snapshot.val();
->>>>>>> 0718d9acc486a73e2a9fb260cd73b60a0724d3cb
         if(typeof result == 'null'){
           return [];
         }
         return result
-    }
+      }
 
       // limitation
       if( limit !== null){
