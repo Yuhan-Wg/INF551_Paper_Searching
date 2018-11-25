@@ -38,7 +38,7 @@ async function paperSearch(keyword,limit,logic1, logic2, logic3){
           return [];
         }
         return result
-      }
+    }
 
       // limitation
       if( limit !== null){
