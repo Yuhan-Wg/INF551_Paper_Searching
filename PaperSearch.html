@@ -77,20 +77,48 @@
     async function paperSearch(){
         var limit = new Array();
         limit['year'] = ['2010','2016']
-        limit['type'] = ['article']
+        limit['catesearch'] = ['articlecommentary']
+        document.getElementById("text").innerHTML = '';
+        var text = document.getElementById("input").value
         var logic1 = 'or'
         var logic2 = 'or'
-        var logic3 = 'or'
-        var index = await indexProducer(limit,logic1, logic2, logic3);
+        var logic3 = 'and'
+        var index = await indexProducer(text, limit,logic1, logic2, logic3);
         alert(index)
         var results = await indexToMetadata(index);
+        for (var j = 0; j<results.length;j++){
+          result = results[j]
+          if (result['text'].length > 300){
+          content= result['text'].substring(0,300) + '...';
+          }
+          else{
+            content = result['text'];
+          }
+          if (! result['author']){
+            author = "Anonymous";
+          }
+          else{
+            author = ""
+            for (var i=0;i<result['author'].length;i++){
+              author += result['author'][i] + ", "
+            }
+            if (author.length > 50){
+            author= author.substring(0,50) + '...';
+            }
+          }
+           document.getElementById("text").innerHTML += '<td class="t"><div class="bar"><div class="title">' +
+           result['title'] +'</div><div class="date"><i>' + result['date'] +
+           '</i></div><div class="author">' + author + '</div><div class="content">'
+           + content + '</div><br<div class="download">'
+           + '<a href="'+result['pdfLink'] + '">Download</a>&nbsp&nbsp<a href="">Learn more</a></div>' + '</div></td><br>';
+        }
+
         //alert(results);
         return results;
       }
 
-      async function indexProducer(limit,logic1, logic2, logic3){
-        document.getElementById("text").innerHTML = '';
-        var text = document.getElementById("input").value.toLowerCase()
+    async function indexProducer(keyword, limit,logic1, logic2, logic3){
+        var text = keyword.toLowerCase()
         var textarray = text.split(/[\s]/);
         var idx = [];
 
@@ -108,7 +136,7 @@
           for (var key in limit){
             idx_limit_c = []
             for(var i=0;i<limit[key].length;i++){
-              var RefLimit = database.ref('metadata/' + key + '/' + limit[key][i]);
+              var RefLimit = database.ref(key + '/' + limit[key][i]);
               var RefLimit = await RefLimit.once('value');
               idx_limit_r = indexMerge(RefLimit)
               if(logic2 == 'and'){
@@ -159,19 +187,19 @@
 
         for (var i=0;i<textarray.length;i++){
             idx_r = []
-            var Refauthor = database.ref('metadata/author/' + textarray[i]);
+            var Refauthor = database.ref('author/' + textarray[i]);
             var Refauthor = await Refauthor.once('value');
             idx_r = idx_r.concat(indexMerge(Refauthor));
 
-            var Refinstitution = database.ref('metadata/institution/' + textarray[i]);
+            var Refinstitution = database.ref('institution/' + textarray[i]);
             var Refinstitution = await Refinstitution.once('value');
             idx_r = idx_r.concat(indexMerge(Refinstitution));
 
-            var Reftitle = database.ref('metadata/title/' +textarray[i]);
+            var Reftitle = database.ref('title/' +textarray[i]);
             var Reftitle = await Reftitle.once('value');
             idx_r = idx_r.concat(indexMerge(Reftitle));
 
-            var Reftext = database.ref('metadata/textWords/' +textarray[i]);
+            var Reftext = database.ref('textWords/' +textarray[i]);
             var Reftext = await Reftext.once('value');
             idx_r = idx_r.concat(indexMerge(Reftext));
 
@@ -244,43 +272,14 @@
     async function indexToMetadata(idx){
         var results = []
         for (var i=0;i<idx.length;i++){
-            var ref = database.ref('metadata/id/' + idx[i]);
+            var ref = database.ref('id/' + idx[i]);
             ref = await ref.once('value');
-            ref = metadataSearch(ref);
+            ref = ref.val();
             results.push(ref);
         }
         return results
     }
 
-    function metadataSearch(snapshot){
-        //idx = JSON.stringify(result)
-        var result = snapshot.val();
-        if (result['text'].length > 300){
-        content= result['text'].substring(0,300) + '...';
-        }
-        else{
-          content = result['text'];
-        }
-        if (! result['author']){
-          author = "Anonymous";
-        }
-        else{
-          author = ""
-          for (var i=0;i<result['author'].length;i++){
-            author += result['author'][i] + ", "
-          }
-          if (author.length > 50){
-          author= author.substring(0,50) + '...';
-          }
-        }
-
-         document.getElementById("text").innerHTML += '<td class="t"><div class="bar"><div class="title">' +
-         result['title'] +'</div><div class="date"><i>' + result['date'] +
-         '</i></div><div class="author">' + author + '</div><div class="content">'
-         + content + '</div><br<div class="download">'
-         + '<a href="'+result['pdfLink'] + '">Download</a>&nbsp&nbsp<a href="">Learn more</a></div>' + '</div></td><br>';
-         return result;
-    }
 
 
 </script>
