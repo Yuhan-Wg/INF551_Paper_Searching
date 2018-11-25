@@ -26,6 +26,7 @@ async function paperSearch(keyword,limit,logic1, logic2, logic3){
   return results;
   }
 
+
   async function indexProducer(keyword, limit,logic1, logic2, logic3){
       var text = keyword.toLowerCase()
       var textarray = text.split(/[\s]/);

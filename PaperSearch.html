@@ -76,11 +76,11 @@
 
     async function paperSearch(){
         var limit = new Array();
-        limit['year'] = ['2010','2016']
-        limit['catesearch'] = ['articlecommentary']
+        limit['year'] = [2014]
+        limit['catesearch'] = ['none','other']
         document.getElementById("text").innerHTML = '';
         var text = document.getElementById("input").value
-        var logic1 = 'or'
+        var logic1 = 'and'
         var logic2 = 'or'
         var logic3 = 'and'
         var index = await indexProducer(text, limit,logic1, logic2, logic3);
