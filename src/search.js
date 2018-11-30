@@ -96,13 +96,13 @@ async function paperSearch(keyword,limit,logic1, logic2, logic3){
 
       for (var i=0;i<textarray.length;i++){
           idx_r = []
-          var Refauthor = database.ref('author/' + textarray[i]);
-          var Refauthor = await Refauthor.once('value');
-          idx_r = idx_r.concat(indexMerge(Refauthor));
+          //var Refauthor = database.ref('author/' + textarray[i]);
+          //var Refauthor = await Refauthor.once('value');
+          //idx_r = idx_r.concat(indexMerge(Refauthor));
 
-          var Refinstitution = database.ref('institution/' + textarray[i]);
-          var Refinstitution = await Refinstitution.once('value');
-          idx_r = idx_r.concat(indexMerge(Refinstitution));
+          //var Refinstitution = database.ref('institution/' + textarray[i]);
+          //var Refinstitution = await Refinstitution.once('value');
+          //idx_r = idx_r.concat(indexMerge(Refinstitution));
 
           var Reftitle = database.ref('title/' +textarray[i]);
           var Reftitle = await Reftitle.once('value');

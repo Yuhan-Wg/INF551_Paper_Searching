@@ -77,7 +77,9 @@
     async function paperSearch(){
         var limit = new Array();
         limit['year'] = [2014]
-        limit['catesearch'] = ['none','other']
+        limit['catesearch'] = ['bookreview']
+        //limit['author'] = ['warren cornwall']
+        //limit = null
         document.getElementById("text").innerHTML = '';
         var text = document.getElementById("input").value
         var logic1 = 'and'
@@ -114,6 +116,7 @@
         }
 
         //alert(results);
+        //alert(results[2]['type'])
         return results;
       }
 
@@ -187,15 +190,15 @@
 
         for (var i=0;i<textarray.length;i++){
             idx_r = []
-            var Refauthor = database.ref('author/' + textarray[i]);
-            var Refauthor = await Refauthor.once('value');
-            idx_r = idx_r.concat(indexMerge(Refauthor));
+            //var Refauthor = database.ref('author/' + textarray[i]);
+            //var Refauthor = await Refauthor.once('value');
+            //idx_r = idx_r.concat(indexMerge(Refauthor));
 
-            var Refinstitution = database.ref('institution/' + textarray[i]);
-            var Refinstitution = await Refinstitution.once('value');
-            idx_r = idx_r.concat(indexMerge(Refinstitution));
+            //var Refinstitution = database.ref('institution/' + textarray[i]);
+            //var Refinstitution = await Refinstitution.once('value');
+            //idx_r = idx_r.concat(indexMerge(Refinstitution));
 
-            var Reftitle = database.ref('title/' +textarray[i]);
+            var Reftitle = database.ref('titleWords/' +textarray[i]);
             var Reftitle = await Reftitle.once('value');
             idx_r = idx_r.concat(indexMerge(Reftitle));
 
